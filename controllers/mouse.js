@@ -1,5 +1,7 @@
+import { player } from '../components/player'
+import { camera } from '../js/app'
 let mouse = {
-  x : null,
+  x : ,
   y: null ,
 }
 let isMouseDown = false, isMenuActive = false, mouseX = -1, mouseY = -1
@@ -37,19 +39,23 @@ function onMouseDown() {
 function onMouseMove(){
 
   if (!mouse.x){
-    mouse.x = event.x
-    mouse.y = event.y
+    mouse.x =  event.clientX / window.innerWidth * 100
+    mouse.y =  event.clientX / window.innerWidth * 100
     return false
   }
-
-  
 
   let degree = event.clientX / window.innerWidth * 100
   let degree2 = event.clientY / window.innerHeight * 100
   
-  if (degree  )
+  let differenceX = degree -mouse.x
 
-  console.log( degree)
+    camera.rotation.y -=  Math.PI / 90 * differenceX 
+    player.rotation.y -=  Math.PI / 90 * differenceX
+    
+
+    mouse.x = degree
+    mouse.y = degree2
+
 }
 
 

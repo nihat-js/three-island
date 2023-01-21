@@ -72,6 +72,10 @@ export const Player = {
 	lookAt: function () {
 		camera.position.set(0, 4, player.position.z + 10)
 	},
+	lookAround : function (){
+
+	},
+
 	spawn: function () {
 		this_ = this
 

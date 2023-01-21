@@ -35227,6 +35227,7 @@ const Player = {
     lookAt: function() {
         (0, _app.camera).position.set(0, 4, player.position.z + 10);
     },
+    lookAround: function() {},
     spawn: function() {
         this_ = this;
         if (this.isSpawning) clearInterval(id);
@@ -35512,6 +35513,8 @@ function checkMapBorder() {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "mouse", ()=>mouse);
+var _player = require("../components/player");
+var _app = require("../js/app");
 let mouse = {
     x: null,
     y: null
@@ -35538,18 +35541,22 @@ function onMouseDown() {
 // }
 function onMouseMove() {
     if (!mouse.x) {
-        mouse.x = event.x;
-        mouse.y = event.y;
+        mouse.x = event.clientX / window.innerWidth * 100;
+        mouse.y = event.clientX / window.innerWidth * 100;
         return false;
     }
     let degree = event.clientX / window.innerWidth * 100;
     let degree2 = event.clientY / window.innerHeight * 100;
-    if (degree) console.log(degree);
+    let differenceX = degree - mouse.x;
+    (0, _app.camera).rotation.y -= Math.PI / 90 * differenceX;
+    (0, _player.player).rotation.y -= Math.PI / 90 * differenceX;
+    mouse.x = degree;
+    mouse.y = degree2;
 }
 function onMouseUp() {
     isMouseDown = false;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}]},["9k9cF","5AKj5"], "5AKj5", "parcelRequire1a37")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N","../components/player":"69QyH","../js/app":"5AKj5"}]},["9k9cF","5AKj5"], "5AKj5", "parcelRequire1a37")
 
 //# sourceMappingURL=index.a8f04b30.js.map
