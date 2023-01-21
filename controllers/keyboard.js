@@ -1,4 +1,4 @@
-import {  camera, player, } from '../js/app'
+import { camera, player, } from '../js/app'
 import { Player } from '../components/player'
 import { Plane } from '../components/plane'
 
@@ -6,10 +6,7 @@ import { Plane } from '../components/plane'
 // W A S D  => Move
 // R  => Spawn
 // Esc => Menu
-
 let isMenuActive = false;
-
-
 
 window.addEventListener("keydown", onKeyDown)
 window.addEventListener("keyup", onKeyUp)
@@ -20,54 +17,32 @@ let downKeys = []
 
 
 function onKeyDown() {
-  event.key = event.key.toLowerCase()
- 
-  if (event.key=="esc"){
-    
-  }
+  let key = event.key.toLowerCase()
 
-  if (event.key == "r"){
+  if (key == "escape") {
+    document.querySelector("canvas").classList.toggle("d-none")
+    document.querySelector(".menu").classList.toggle("d-none")
+    return false
+  }
+  if (key == "r") {
     Player.spawn()
+    return false;
   }
-
-  if ( !Player.isSpawning &&   downKeys.indexOf(event.key) == -1) {
-    downKeys.push(event.key)
+  if (Player.isSpawning) {
+    return false
   }
-
-
-  if (event.key == "v") {
-    camera.position.z += 1
-  } else if (event.key == "b") {
-    camera.position.z -= 1
-  }
-  else if (event.key == "j") {
-    camera.position.x -= 1
-  }
-  else if (event.key == "l") {
-    camera.position.x += 1
-  }
-  else if (event.key == "i") {
-    camera.position.y += 1
-  } else if (event.key == "k") {
-    camera.position.y -= 1
-  }
-
-
-
+  downKeys.push(key)
 }
 
 function onKeyUp() {
-  // console.log("key", event.key)
+  let key = event.key.toLowerCase()
   downKeys = downKeys.filter(x => x != event.key)
-  // console.log(downKeys)
   if (event.key == "w") {
     const timerId = setInterval(() => {
       if (Player.currentSpeed == 0) {
         clearInterval(timerId)
       } else {
-        Player.deAccelerate()
-        Player.goForward()
-        render()
+        // Player.goForward()
       }
 
     }, 1000 / 60)
@@ -78,31 +53,21 @@ function onKeyUp() {
 
 function keyControllers() {
 
-
-    if (downKeys.length == 0) {
+  if (downKeys.length == 0) {
     return false
-   }
+  }
 
   if (downKeys.indexOf("w") > -1) {
-    // Player.accelerate()
     Player.goForward()
 
   } if (downKeys.indexOf("s") > -1) {
     Player.deAccelerate()
-    // if (Math.abs(box.position.z + Player.currentSpeed + Player.height) < planeOptions.height / 2) {
-    //   box.position.z += Player.currentSpeed;
-    //   camera.position.z += Player.currentSpeed
-    // }
   } if (downKeys.indexOf("a") > -1) {
     Player.rotateY("left")
 
   } if (downKeys.indexOf("d") > -1) {
     Player.rotateY("right")
   }
-
-
-  // console.log("camera", camera.position.x, camera.position.y, camera.position.z)
-  // console.log("box", box.position.x, box.position.y, box.position.z)
 
 }
 

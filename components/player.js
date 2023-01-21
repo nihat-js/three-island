@@ -11,7 +11,7 @@ export const Player = {
 
 	rotationSpeed: Math.PI / 51,
 	lastPosition: [],
-	currentSpeed: 0,
+	currentSpeed: .2,
 	maxSpeed: .1,
 	accelerateSpeed: .01,
 	isSpawning: false,
@@ -70,7 +70,7 @@ export const Player = {
 
 	},
 	lookAt: function () {
-		camera.position.set(0, 4, player.position.z + 10)
+		camera.position.set(0, 2, player.position.z + 6)
 	},
 	lookAround : function (){
 

@@ -35186,7 +35186,7 @@ const Player = {
     depth: 1,
     rotationSpeed: Math.PI / 51,
     lastPosition: [],
-    currentSpeed: 0,
+    currentSpeed: .2,
     maxSpeed: .1,
     accelerateSpeed: .01,
     isSpawning: false,
@@ -35226,7 +35226,7 @@ const Player = {
     },
     goBackward: function() {},
     lookAt: function() {
-        (0, _app.camera).position.set(0, 4, player.position.z + 10);
+        (0, _app.camera).position.set(0, 2, player.position.z + 6);
     },
     lookAround: function() {},
     spawn: function() {
@@ -35521,9 +35521,19 @@ let mouse = {
     y: null
 };
 let isMouseDown = false, isMenuActive = false, mouseX = -1, mouseY = -1;
-window.addEventListener("mousedown", onMouseDown);
-window.addEventListener("mousemove", onMouseMove);
-window.addEventListener("mouseup", onMouseUp);
+let activateMouse = false;
+function activateMose() {
+    activateMose = !activateMose;
+    if (activateMouse) {
+        window.addEventListener("mousedown", onMouseDown);
+        window.addEventListener("mousemove", onMouseMove);
+        window.addEventListener("mouseup", onMouseUp);
+    } else {
+        window.removeEventListener("mousedown", onMouseDown);
+        window.removeEventListener("mousemove", onMouseMove);
+        window.removeEventListener("mouseup", onMouseUp);
+    }
+}
 function onMouseDown() {
     isMouseDown = true;
 }
@@ -35549,8 +35559,8 @@ function onMouseMove() {
     let degree = event.clientX / window.innerWidth * 100;
     let degree2 = event.clientY / window.innerHeight * 100;
     let differenceX = degree - mouse.x;
-    (0, _app.camera).rotation.y -= Math.PI / 90 * differenceX;
-    (0, _player.player).rotation.y -= Math.PI / 90 * differenceX;
+    (0, _app.camera).rotation.y -= Math.PI / 45 * differenceX;
+    (0, _player.player).rotation.y -= Math.PI / 45 * differenceX;
     mouse.x = degree;
     mouse.y = degree2;
 }
@@ -35573,41 +35583,34 @@ window.addEventListener("keydown", onKeyDown);
 window.addEventListener("keyup", onKeyUp);
 let downKeys = [];
 function onKeyDown() {
-    event.key = event.key.toLowerCase();
-    event.key;
-    if (event.key == "r") (0, _player.Player).spawn();
-    if (!(0, _player.Player).isSpawning && downKeys.indexOf(event.key) == -1) downKeys.push(event.key);
-    if (event.key == "v") (0, _app.camera).position.z += 1;
-    else if (event.key == "b") (0, _app.camera).position.z -= 1;
-    else if (event.key == "j") (0, _app.camera).position.x -= 1;
-    else if (event.key == "l") (0, _app.camera).position.x += 1;
-    else if (event.key == "i") (0, _app.camera).position.y += 1;
-    else if (event.key == "k") (0, _app.camera).position.y -= 1;
+    let key = event.key.toLowerCase();
+    if (key == "escape") {
+        document.querySelector("canvas").classList.toggle("d-none");
+        document.querySelector(".menu").classList.toggle("d-none");
+        return false;
+    }
+    if (key == "r") {
+        (0, _player.Player).spawn();
+        return false;
+    }
+    if ((0, _player.Player).isSpawning) return false;
+    downKeys.push(key);
 }
 function onKeyUp() {
-    // console.log("key", event.key)
+    let key = event.key.toLowerCase();
     downKeys = downKeys.filter((x)=>x != event.key);
-    // console.log(downKeys)
     if (event.key == "w") {
         const timerId = setInterval(()=>{
             if ((0, _player.Player).currentSpeed == 0) clearInterval(timerId);
-            else {
-                (0, _player.Player).deAccelerate();
-                (0, _player.Player).goForward();
-                render();
-            }
         }, 1000 / 60);
     }
 }
 function keyControllers() {
     if (downKeys.length == 0) return false;
-    if (downKeys.indexOf("w") > -1) // Player.accelerate()
-    (0, _player.Player).goForward();
+    if (downKeys.indexOf("w") > -1) (0, _player.Player).goForward();
     if (downKeys.indexOf("s") > -1) (0, _player.Player).deAccelerate();
     if (downKeys.indexOf("a") > -1) (0, _player.Player).rotateY("left");
     if (downKeys.indexOf("d") > -1) (0, _player.Player).rotateY("right");
-// console.log("camera", camera.position.x, camera.position.y, camera.position.z)
-// console.log("box", box.position.x, box.position.y, box.position.z)
 }
 const keyboard = {};
 setInterval(keyControllers, 1000 / 60);

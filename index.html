@@ -19,7 +19,7 @@
       left: 50%;
       width: fit-content;
       height: fit-content;
-      color : #fff;
+      color : #191919;
     }
     
     .menu{
@@ -31,10 +31,11 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      z-index: 5;
     }
     .menu .content{
       background-color: #fff;
-      max-width: 400px;
+      max-width: 500px;
       padding: 0  40px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) , 0 4px 8px rgba(0, 0, 0, 0.2);
       display: flex;
@@ -50,12 +51,13 @@
       margin-bottom: 30px;
     }
     .d-none{
-      display: none;
+      display: none !important;
     }
     button {
-      width: 300px;
+      width: 350px;
       background-color: hsl(250, 80%, 20%);
-      padding: 15px 21px ;
+      padding: 15px 25px ;
+      font-size: 18px;
       margin-bottom: 10px ;
       color : #fff;
       border-radius: 5px;
@@ -66,6 +68,10 @@
       background : hsl(250,80%,40%)
       /* linear-gradient(to right, hsl(250, 80%, 20) 0  , hsl(250, 80%, 20) 50% , rgba(19,19,19) 50% , rgba(19,19,19) 100% ) */
     }
+    .ref {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
   </style>
   <script src="js/app.js" type="module" ></script>
 </head>
@@ -73,15 +79,15 @@
   <div class="tips"> 
     <p class="text"> Press R to reload game  </p>
     <p class="text"> use W A S D </p>
-    <p class="text">  </p>
   </div>
-  <div class="menu">
+  <div class="menu d-none">
     <div class="content">
       <h2 class="title"> THREE ISLAND </h2>
-      <button onclick="startAgain()" > Start again </button>
+      <button onclick="newGame()" > New Game  </button>
       <button onclick="changePlaneTexture()"  >  Random ground   </button>
-      <p class="text"> Github   <a  target="_blank" href="https://github.com/nihat-js"> nihat-js  </a>  </p>
-      <p class="text"> Github   <a  target="_blank" href="https://github.com/nihat-js/three-island"> REPO   </a>  </p>
+      <button  onclick="activateMouse()" > Activate mouse (beta )    </butt>
+      <p class="ref"> Github   <a  target="_blank" href="https://github.com/nihat-js"> nihat-js  </a>  </p>
+      <p class="ref"> Github   <a  target="_blank" href="https://github.com/nihat-js/three-island"> REPO   </a>  </p>
     </div>
   </div>
 </body>

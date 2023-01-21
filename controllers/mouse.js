@@ -5,10 +5,24 @@ let mouse = {
   y: null ,
 }
 let isMouseDown = false, isMenuActive = false, mouseX = -1, mouseY = -1
+let activateMouse = false
 
-window.addEventListener("mousedown", onMouseDown)
-window.addEventListener("mousemove", onMouseMove)
-window.addEventListener("mouseup", onMouseUp)
+
+function activateMose(){
+  activateMose = !activateMose
+  if (activateMouse){
+    window.addEventListener("mousedown", onMouseDown)
+    window.addEventListener("mousemove", onMouseMove)
+    window.addEventListener("mouseup", onMouseUp)
+    
+  }else{
+    window.removeEventListener("mousedown", onMouseDown)
+    window.removeEventListener("mousemove", onMouseMove)
+    window.removeEventListener("mouseup", onMouseUp)
+  }
+}
+
+
 
 
 
@@ -49,8 +63,8 @@ function onMouseMove(){
   
   let differenceX = degree -mouse.x
 
-    camera.rotation.y -=  Math.PI / 90 * differenceX 
-    player.rotation.y -=  Math.PI / 90 * differenceX
+    camera.rotation.y -=  Math.PI / 45 * differenceX 
+    player.rotation.y -=  Math.PI / 45 * differenceX
     
 
     mouse.x = degree
