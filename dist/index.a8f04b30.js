@@ -562,25 +562,26 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "renderer", ()=>renderer);
 parcelHelpers.export(exports, "scene", ()=>scene);
 parcelHelpers.export(exports, "camera", ()=>camera);
-// const vehicle_ = new THREE.Box3(new THREE.Vector3() , new THREE.Vector3() )
+// const player_ = new THREE.Box3(new THREE.Vector3() , new THREE.Vector3() )
 // const ball_ = new THREE.Box3(new THREE.Vector3() , new THREE.Vector3() )
 // const ball_ = new THREE.Sphere( ball.position,1 )
-// vehicle.geometry.computeBoundingBox();
+// player.geometry.computeBoundingBox();
 // ball.geometry.computeBoundingBox();
 parcelHelpers.export(exports, "render", ()=>render);
 var _three = require("three");
 var _orbitControls = require("three/examples/jsm/controls/OrbitControls");
 var _gltfloader = require("three/examples/jsm/loaders/GLTFLoader");
 var _datGui = require("dat.gui");
-var _userController = require("./userController");
 var _plane = require("../components/plane");
-var _vehicle = require("../components/vehicle");
+var _player = require("../components/player");
 var _ball = require("../components/ball");
 var _wall1 = require("../components/wall1");
 var _wall2 = require("../components/wall2");
 var _goal = require("../components/goal");
+var _oceans = require("../components/oceans");
 var _collision = require("../engine/collision");
 var _mapBorder = require("../engine/mapBorder");
+var _mouse = require("../controllers/mouse");
 const gltfLoader = new (0, _gltfloader.GLTFLoader)();
 const renderer = new _three.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -602,28 +603,40 @@ gui.addColor({
     box.material.color.set(e);
 });
 function render() {
-    //  let result  = collisionWithSphere (vehicle,ball  )
-    //  if (result){
-    //    Ball.move()
-    //   }
-    // result = collisionWithObject (vehicle,capsule1)
+    let result = (0, _collision.collisionWithSphere)((0, _player.player), (0, _ball.ball));
+    if (result) (0, _ball.Ball).move();
+    // result = collisionWithObject (player,capsule1)
     // if (result) {
     //   capsule1.material.color.set(0x008080)
     // }
     // checkMapBorder()
-    (0, _vehicle.Vehicle).lookAt();
+    (0, _player.Player).lookAt();
     renderer.render(scene, camera);
 }
-(0, _vehicle.vehicle).position.set(0, (0, _vehicle.Vehicle).height / 2, 3);
-(0, _vehicle.Vehicle).lookAt() //  change camera target to vehicel
+// player.position.set(0, Player.height/2, 3)
+(0, _player.Player).lookAt() //  change camera target to vehicel
 ;
-(0, _ball.ball).position.set(0, (0, _ball.Ball).radius, -5);
-scene.add((0, _vehicle.vehicle), (0, _plane.plane), (0, _goal.capsule1), (0, _goal.capsule2), (0, _goal.capsule4), (0, _goal.capsule5), (0, _ball.ball), (0, _wall1.wall1), (0, _wall2.wall2));
+SceneArray = [
+    (0, _player.player),
+    (0, _plane.plane),
+    (0, _goal.capsule1),
+    (0, _goal.capsule2),
+    (0, _goal.capsule4),
+    (0, _goal.capsule5),
+    (0, _ball.ball),
+    (0, _wall1.wall1),
+    (0, _wall2.wall2),
+    (0, _oceans.ocean1),
+    (0, _oceans.ocean2),
+    (0, _oceans.ocean3),
+    (0, _oceans.ocean4)
+];
+scene.add(...SceneArray);
 setInterval(()=>{
     render();
 }, 1000 / 60);
 
-},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","three/examples/jsm/loaders/GLTFLoader":"dVRsF","dat.gui":"k3xQk","./userController":"2Nvbq","../components/plane":"kSuec","../components/vehicle":"6BZKp","../components/ball":"2abE5","../engine/collision":"bbAnI","../engine/mapBorder":"8XwoG","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N","../components/wall1":"gijtl","../components/goal":"9oObE","../components/wall2":"bavdb"}],"ktPTu":[function(require,module,exports) {
+},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","three/examples/jsm/loaders/GLTFLoader":"dVRsF","dat.gui":"k3xQk","../components/plane":"kSuec","../components/player":"69QyH","../components/ball":"2abE5","../components/wall1":"gijtl","../components/wall2":"bavdb","../components/goal":"9oObE","../components/oceans":"lGPjU","../engine/collision":"bbAnI","../engine/mapBorder":"8XwoG","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N","../controllers/mouse":"94UUj"}],"ktPTu":[function(require,module,exports) {
 /**
  * @license
  * Copyright 2010-2022 Three.js Authors
@@ -35140,141 +35153,7 @@ var index = {
 };
 exports.default = index;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"2Nvbq":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "userController", ()=>userController);
-var _app = require("./app");
-var _vehicle = require("../components/vehicle");
-var _plane = require("../components/plane");
-let isMouseDown = false, isMenuActive = false, mouseX = -1, mouseY = -1;
-window.addEventListener("mousedown", onMouseDown);
-window.addEventListener("mousemove", onMouseMove);
-window.addEventListener("mouseup", onMouseUp);
-window.addEventListener("keydown", onKeyDown);
-window.addEventListener("keyup", onKeyUp);
-function onMouseDown() {
-    isMouseDown = true;
-}
-function onMouseMove(event1) {
-    // if (!isMouseDown) return false
-    if (isMenuActive) return false;
-//   mouseX = (event.clientX / window.innerWidth) * 2 - 1
-//   console.log(mouseX)
-//   mouseY =  -(event.clientY / window.innerHeight) * 2 + 1
-// camera.position.x +=  mouseX
-// camera.position.y +=  mouseY
-// renderer.render(scene,camera)
-// console.log(camera.position.x,camera.position.y,camera.position.z)  
-}
-function onMouseUp() {
-    isMouseDown = false;
-}
-let downKeys = [];
-function onKeyDown() {
-    event.key = event.key.toLowerCase();
-    event.key == "ArrowUp" ? event.key = "w" : event.key == "ArrowDown" ? event.key : event.key == "ArrowLeft" ? event.key = "a" : event.key == "ArrowRight" && (event.key = "d");
-    if (downKeys.indexOf(event.key) == -1) downKeys.push(event.key);
-    if (event.key == "v") (0, _app.camera).position.z += 1;
-    else if (event.key == "b") (0, _app.camera).position.z -= 1;
-    else if (event.key == "j") (0, _app.camera).position.x -= 1;
-    else if (event.key == "l") (0, _app.camera).position.x += 1;
-    else if (event.key == "i") (0, _app.camera).position.y += 1;
-    else if (event.key == "k") (0, _app.camera).position.y -= 1;
-}
-function onKeyUp() {
-    // console.log("key", event.key)
-    downKeys = downKeys.filter((x)=>x != event.key);
-    // console.log(downKeys)
-    if (event.key == "w") {
-        const timerId = setInterval(()=>{
-            if ((0, _vehicle.Vehicle).currentSpeed == 0) clearInterval(timerId);
-            else {
-                (0, _vehicle.Vehicle).deAccelerate();
-                (0, _vehicle.Vehicle).goForward();
-                (0, _app.render)();
-            }
-        }, 1000 / 60);
-    }
-}
-function keyControllers() {
-    if (downKeys.length == 0) return false;
-    if (downKeys.indexOf("w") > -1) {
-        (0, _vehicle.Vehicle).accelerate();
-        (0, _vehicle.Vehicle).goForward();
-    }
-    if (downKeys.indexOf("s") > -1) (0, _vehicle.Vehicle).deAccelerate();
-    if (downKeys.indexOf("a") > -1) (0, _vehicle.Vehicle).rotateY("left");
-    if (downKeys.indexOf("d") > -1) (0, _vehicle.Vehicle).rotateY("right");
-// console.log("camera", camera.position.x, camera.position.y, camera.position.z)
-// console.log("box", box.position.x, box.position.y, box.position.z)
-}
-const userController = ()=>{};
-setInterval(keyControllers, 1000 / 60);
-
-},{"./app":"5AKj5","../components/vehicle":"6BZKp","../components/plane":"kSuec","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"6BZKp":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Vehicle", ()=>Vehicle);
-parcelHelpers.export(exports, "vehicle", ()=>vehicle);
-var _app = require("../js/app");
-var _three = require("three");
-const Vehicle = {
-    width: .5,
-    height: 1,
-    depth: 1,
-    rotationSpeed: Math.PI / 51,
-    lastPosition: [],
-    currentSpeed: 0,
-    maxSpeed: .1,
-    accelerateSpeed: .01,
-    accelerate: function() {
-        this.currentSpeed = this.currentSpeed + this.accelerateSpeed > this.maxSpeed ? this.maxSpeed : this.currentSpeed + this.accelerateSpeed;
-    },
-    deAccelerate: function() {
-        this.currentSpeed = this.currentSpeed - this.accelerateSpeed < 0 ? 0 : this.currentSpeed - this.accelerateSpeed;
-    },
-    rotateY: function(direction) {
-        this.currentSpeed;
-        if (direction == "right") vehicle.rotation.y -= this.rotationSpeed;
-        else if (direction == "left") vehicle.rotation.y += this.rotationSpeed;
-    // console.log("vehicle-rot-y",vehicle.rotation.y)
-    },
-    goForward: function() {
-        vehicle.rotation.y < 0 && (vehicle.rotation.y += Math.abs(Math.floor(vehicle.rotation.y / 2 * Math.PI)) * 2 * Math.PI);
-        vehicle.rotation.y > Math.PI && (vehicle.rotation.y %= 2 * Math.PI);
-        if (vehicle.rotation.y == 0) vehicle.position.z -= this.currentSpeed;
-        else if (0 < vehicle.rotation.y && vehicle.rotation.y < Math.PI / 2) {
-            vehicle.position.x -= this.currentSpeed * (1 - Math.sin(vehicle.rotation.y));
-            vehicle.position.z -= this.currentSpeed * (1 - Math.cos(vehicle.rotation.y));
-        } else if (vehicle.rotation.y > Math.PI / 2 && vehicle.rotation.y < Math.PI) {
-            vehicle.position.x -= this.currentSpeed * (1 - Math.sin(vehicle.rotation.y));
-            vehicle.position.z += this.currentSpeed * (1 - Math.cos(vehicle.rotation.y));
-        } else if (vehicle.rotation.y > Math.PI && vehicle.rotation.y < Math.PI * 1.5) {
-            vehicle.position.x += this.currentSpeed * (1 - Math.sin(vehicle.rotation.y));
-            vehicle.position.z += this.currentSpeed * (1 - Math.cos(vehicle.rotation.y));
-        } else if (vehicle.rotation.y > Math.PI * 1.5 && vehicle.rotation.y < Math.PI * 2) {
-            vehicle.position.x += this.currentSpeed * (1 - Math.cos(vehicle.rotation.y));
-            vehicle.position.z -= this.currentSpeed * (1 - Math.sin(vehicle.rotation.y));
-        }
-        // console.log("z,",vehicle.position.z)
-        this.lookAt();
-        (0, _app.camera).position.x = vehicle.position.x;
-    // camera.rotation.y =  -  Math.pi /360 * 75 / vehicle.rotation.y  
-    },
-    goBackward: function() {},
-    lookAt: function() {
-        (0, _app.camera).position.set(0, 4, vehicle.position.z + 10);
-    }
-};
-const boxGeometry = new _three.BoxGeometry(Vehicle.width, Vehicle.height, Vehicle.depth);
-const boxMaterial = new _three.MeshNormalMaterial({
-    color: 0x191919
-});
-const vehicle = new _three.Mesh(boxGeometry, boxMaterial);
-console.log(vehicle);
-
-},{"../js/app":"5AKj5","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"kSuec":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"kSuec":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Plane", ()=>Plane);
@@ -35293,14 +35172,92 @@ const planeMaterial = new _three.MeshBasicMaterial({
 const plane = new _three.Mesh(planeGeometry, planeMaterial);
 plane.rotation.x = -Math.PI / 2;
 
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"2abE5":[function(require,module,exports) {
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"69QyH":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Player", ()=>Player);
+parcelHelpers.export(exports, "player", ()=>player);
+var _app = require("../js/app");
+var _three = require("three");
+const Player = {
+    width: .5,
+    height: 1,
+    depth: 1,
+    rotationSpeed: Math.PI / 51,
+    lastPosition: [],
+    currentSpeed: 0,
+    maxSpeed: .1,
+    accelerateSpeed: .01,
+    isSpawning: false,
+    accelerate: function() {
+        this.currentSpeed = this.currentSpeed + this.accelerateSpeed > this.maxSpeed ? this.maxSpeed : this.currentSpeed + this.accelerateSpeed;
+    },
+    deAccelerate: function() {
+        this.currentSpeed = this.currentSpeed - this.accelerateSpeed < 0 ? 0 : this.currentSpeed - this.accelerateSpeed;
+    },
+    rotateY: function(direction) {
+        this.currentSpeed;
+        if (direction == "right") player.rotation.y -= this.rotationSpeed;
+        else if (direction == "left") player.rotation.y += this.rotationSpeed;
+    // console.log("player-rot-y",player.rotation.y)
+    },
+    goForward: function() {
+        player.rotation.y < 0 && (player.rotation.y += Math.abs(Math.floor(player.rotation.y / 2 * Math.PI)) * 2 * Math.PI);
+        player.rotation.y > Math.PI && (player.rotation.y %= 2 * Math.PI);
+        if (player.rotation.y == 0) player.position.z -= this.currentSpeed;
+        else if (0 < player.rotation.y && player.rotation.y < Math.PI / 2) {
+            player.position.x -= this.currentSpeed * (1 - Math.sin(player.rotation.y));
+            player.position.z -= this.currentSpeed * (1 - Math.cos(player.rotation.y));
+        } else if (player.rotation.y > Math.PI / 2 && player.rotation.y < Math.PI) {
+            player.position.x -= this.currentSpeed * (1 - Math.sin(player.rotation.y));
+            player.position.z += this.currentSpeed * (1 - Math.cos(player.rotation.y));
+        } else if (player.rotation.y > Math.PI && player.rotation.y < Math.PI * 1.5) {
+            player.position.x += this.currentSpeed * (1 - Math.sin(player.rotation.y));
+            player.position.z += this.currentSpeed * (1 - Math.cos(player.rotation.y));
+        } else if (player.rotation.y > Math.PI * 1.5 && player.rotation.y < Math.PI * 2) {
+            player.position.x += this.currentSpeed * (1 - Math.cos(player.rotation.y));
+            player.position.z -= this.currentSpeed * (1 - Math.sin(player.rotation.y));
+        }
+        // console.log("z,",player.position.z)
+        this.lookAt();
+        (0, _app.camera).position.x = player.position.x;
+    // camera.rotation.y =  -  Math.pi /360 * 75 / player.rotation.y  
+    },
+    goBackward: function() {},
+    lookAt: function() {
+        (0, _app.camera).position.set(0, 4, player.position.z + 10);
+    },
+    spawn: function() {
+        this_ = this;
+        if (this.isSpawning) clearInterval(id);
+        this.lookAt();
+        player.position.set(0, 1, 5);
+        let count = 1;
+        const id = setInterval(()=>{
+            if (count == 50) {
+                clearInterval(id);
+                this_.isSpawning = false;
+            } else {
+                player.position.y = 10.5 - 0.2 * count;
+                count++;
+            }
+        }, 1000 / 60);
+    }
+};
+const boxGeometry = new _three.BoxGeometry(Player.width, Player.height, Player.depth);
+const boxMaterial = new _three.MeshNormalMaterial({
+    color: 0x191919
+});
+const player = new _three.Mesh(boxGeometry, boxMaterial) // console.log(player)
+;
+
+},{"../js/app":"5AKj5","three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"2abE5":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "Ball", ()=>Ball);
 parcelHelpers.export(exports, "ball", ()=>ball);
 var _three = require("three");
-var _app = require("../js/app");
-var _vehicle = require("./vehicle");
+var _player = require("../components/player");
 const textureLoader = new _three.TextureLoader();
 const Ball = {
     radius: .25,
@@ -35314,12 +35271,12 @@ const Ball = {
         let count = 0;
         let id = setInterval(()=>{
             count++;
-            if (count == 90) {
+            if (count == 30) {
                 this_.ismMoving = false;
                 clearInterval(id);
             }
-            (0, _app.ball).position.z -= (0, _vehicle.Vehicle).currentSpeed;
-            (0, _app.render)();
+            ball.position.z -= .03;
+        // render()
         }, 1000 / 60);
     }
 };
@@ -35329,8 +35286,101 @@ const sphereMaterial = new _three.MeshBasicMaterial({
     map: textureLoader.load("./textures/tennis-ball.svg")
 });
 const ball = new _three.Mesh(sphereGeometry, sphereMaterial);
+ball.position.set(0, Ball.radius, -2);
 
-},{"../js/app":"5AKj5","./vehicle":"6BZKp","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N","three":"ktPTu"}],"bbAnI":[function(require,module,exports) {
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N","../components/player":"69QyH"}],"gijtl":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Wall1", ()=>Wall1);
+parcelHelpers.export(exports, "wall1", ()=>wall1);
+var _three = require("three");
+const Wall1 = {
+    width: 1,
+    height: 2,
+    depth: 8
+};
+let wallGeometry = new _three.BoxGeometry(Wall1.width, Wall1.height, Wall1.depth);
+let wallMaterial = new _three.MeshBasicMaterial({
+    color: 0x666666
+});
+let wall1 = new _three.Mesh(wallGeometry, wallMaterial);
+wall1.position.set(-15, Wall1.height / 2, -2);
+
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"bavdb":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Wall2", ()=>Wall2);
+parcelHelpers.export(exports, "wall2", ()=>wall2);
+var _three = require("three");
+const Wall2 = {
+    width: 1,
+    height: 2,
+    depth: 8
+};
+let wallGeometry = new _three.BoxGeometry(Wall2.width, Wall2.height, Wall2.depth);
+let wallMaterial = new _three.MeshBasicMaterial({
+    color: 0x666666
+});
+let wall2 = new _three.Mesh(wallGeometry, wallMaterial);
+wall2.position.set(15, Wall2.height / 2, -2);
+
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"9oObE":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "capsule1", ()=>capsule1);
+parcelHelpers.export(exports, "capsule2", ()=>capsule2);
+parcelHelpers.export(exports, "capsule3", ()=>capsule3);
+parcelHelpers.export(exports, "capsule4", ()=>capsule4);
+parcelHelpers.export(exports, "capsule5", ()=>capsule5);
+parcelHelpers.export(exports, "capsule6", ()=>capsule6);
+var _three = require("three");
+let capsuleGeometry = new _three.CapsuleGeometry(.2, 5, 4, 8);
+let capsuleMaterial = new _three.MeshBasicMaterial({
+    color: 0x008080
+});
+const capsule1 = new _three.Mesh(capsuleGeometry, capsuleMaterial);
+const capsule2 = new _three.Mesh(capsuleGeometry, capsuleMaterial);
+const capsule3 = new _three.Mesh(capsuleGeometry, capsuleMaterial);
+const capsule4 = new _three.Mesh(capsuleGeometry, capsuleMaterial);
+const capsule5 = new _three.Mesh(capsuleGeometry, capsuleMaterial);
+const capsule6 = new _three.Mesh(capsuleGeometry, capsuleMaterial);
+capsule1.position.set(-5, 0, -15);
+capsule2.position.set(5, 0, -15);
+capsule4.position.set(5, 0, 15);
+capsule5.position.set(-5, 0, 15);
+
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"lGPjU":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "ocean1", ()=>ocean1);
+parcelHelpers.export(exports, "ocean2", ()=>ocean2);
+parcelHelpers.export(exports, "ocean3", ()=>ocean3);
+parcelHelpers.export(exports, "ocean4", ()=>ocean4);
+var _three = require("three");
+const Ocean = {
+    width: 50,
+    height: 50
+};
+const textureLoader = new _three.TextureLoader();
+const planeGeometry = new _three.PlaneGeometry(Ocean.width, Ocean.height);
+const planeMaterial = new _three.MeshBasicMaterial({
+    color: 0x2B65EC,
+    map: textureLoader.load("./textures/ocean.jpg")
+});
+const ocean1 = new _three.Mesh(new _three.PlaneGeometry(100, 50), planeMaterial);
+const ocean2 = new _three.Mesh(new _three.PlaneGeometry(100, 50), planeMaterial);
+const ocean3 = new _three.Mesh(new _three.PlaneGeometry(50, 100), planeMaterial);
+const ocean4 = new _three.Mesh(new _three.PlaneGeometry(50, 100), planeMaterial);
+ocean1.rotation.x = -Math.PI / 2;
+ocean2.rotation.x = -Math.PI / 2;
+ocean3.rotation.x = -Math.PI / 2;
+ocean4.rotation.x = -Math.PI / 2;
+ocean1.position.set(0, 0, -50);
+ocean2.position.set(0, 0, 50);
+ocean3.position.set(-50, 0, 0);
+ocean4.position.set(50, 0, 0);
+
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"bbAnI":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "collisionWithSphere", ()=>collisionWithSphere);
@@ -35445,80 +35495,61 @@ function isIntersectionExist(a, b) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "checkMapBorder", ()=>checkMapBorder);
-var _vehicle = require("../components/vehicle");
+var _player = require("../components/player");
 var _plane = require("../components/plane");
 function checkMapBorder() {
-    if (Math.abs((0, _vehicle.vehicle).position.z) > (0, _plane.Plane).height / 2) {
-        if ((0, _vehicle.vehicle).position.z > 0) (0, _vehicle.vehicle).position.z = (0, _plane.Plane).height / 2 - (0, _vehicle.Vehicle).depth;
-        else (0, _vehicle.vehicle).position.z = -(0, _plane.Plane).height / 2 + (0, _vehicle.Vehicle).depth;
+    if (Math.abs((0, _player.vehicle).position.z) > (0, _plane.Plane).height / 2) {
+        if ((0, _player.vehicle).position.z > 0) (0, _player.vehicle).position.z = (0, _plane.Plane).height / 2 - (0, _player.Vehicle).depth;
+        else (0, _player.vehicle).position.z = -(0, _plane.Plane).height / 2 + (0, _player.Vehicle).depth;
     }
-    if (Math.abs((0, _vehicle.vehicle).position.x) > (0, _plane.Plane).width / 2) {
-        if ((0, _vehicle.vehicle).position.x > 0) (0, _vehicle.vehicle).position.x = (0, _plane.Plane).width / 2 - (0, _vehicle.Vehicle).width;
-        else (0, _vehicle.vehicle).position.x = -(0, _plane.Plane).width / 2 + (0, _vehicle.Vehicle).width;
+    if (Math.abs((0, _player.vehicle).position.x) > (0, _plane.Plane).width / 2) {
+        if ((0, _player.vehicle).position.x > 0) (0, _player.vehicle).position.x = (0, _plane.Plane).width / 2 - (0, _player.Vehicle).width;
+        else (0, _player.vehicle).position.x = -(0, _plane.Plane).width / 2 + (0, _player.Vehicle).width;
     }
 }
 
-},{"../components/vehicle":"6BZKp","../components/plane":"kSuec","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"gijtl":[function(require,module,exports) {
+},{"../components/player":"69QyH","../components/plane":"kSuec","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"94UUj":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Wall1", ()=>Wall1);
-parcelHelpers.export(exports, "wall1", ()=>wall1);
-var _three = require("three");
-const Wall1 = {
-    width: 1,
-    height: 2,
-    depth: 8
+parcelHelpers.export(exports, "mouse", ()=>mouse);
+let mouse = {
+    x: null,
+    y: null
 };
-let wallGeometry = new _three.BoxGeometry(Wall1.width, Wall1.height, Wall1.depth);
-let wallMaterial = new _three.MeshBasicMaterial({
-    color: 0x666666
-});
-let wall1 = new _three.Mesh(wallGeometry, wallMaterial);
-wall1.position.set(-15, Wall1.height / 2, -2);
+let isMouseDown = false, isMenuActive = false, mouseX = -1, mouseY = -1;
+window.addEventListener("mousedown", onMouseDown);
+window.addEventListener("mousemove", onMouseMove);
+window.addEventListener("mouseup", onMouseUp);
+function onMouseDown() {
+    isMouseDown = true;
+}
+// function onMouseMove(event) {
+//   // if (!isMouseDown) return false
+//   if (isMenuActive) {
+//     return false
+//   }
+//   //   mouseX = (event.clientX / window.innerWidth) * 2 - 1
+//   //   console.log(mouseX)
+//   //   mouseY =  -(event.clientY / window.innerHeight) * 2 + 1
+//   // camera.position.x +=  mouseX
+//   // camera.position.y +=  mouseY
+//   // renderer.render(scene,camera)
+//   // console.log(camera.position.x,camera.position.y,camera.position.z)  
+// }
+function onMouseMove() {
+    if (!mouse.x) {
+        mouse.x = event.x;
+        mouse.y = event.y;
+        return false;
+    }
+    let degree = event.clientX / window.innerWidth * 100;
+    let degree2 = event.clientY / window.innerHeight * 100;
+    if (degree) console.log(degree);
+}
+function onMouseUp() {
+    isMouseDown = false;
+}
 
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"9oObE":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "capsule1", ()=>capsule1);
-parcelHelpers.export(exports, "capsule2", ()=>capsule2);
-parcelHelpers.export(exports, "capsule3", ()=>capsule3);
-parcelHelpers.export(exports, "capsule4", ()=>capsule4);
-parcelHelpers.export(exports, "capsule5", ()=>capsule5);
-parcelHelpers.export(exports, "capsule6", ()=>capsule6);
-var _three = require("three");
-let capsuleGeometry = new _three.CapsuleGeometry(.2, 5, 4, 8);
-let capsuleMaterial = new _three.MeshBasicMaterial({
-    color: 0x008080
-});
-const capsule1 = new _three.Mesh(capsuleGeometry, capsuleMaterial);
-const capsule2 = new _three.Mesh(capsuleGeometry, capsuleMaterial);
-const capsule3 = new _three.Mesh(capsuleGeometry, capsuleMaterial);
-const capsule4 = new _three.Mesh(capsuleGeometry, capsuleMaterial);
-const capsule5 = new _three.Mesh(capsuleGeometry, capsuleMaterial);
-const capsule6 = new _three.Mesh(capsuleGeometry, capsuleMaterial);
-capsule1.position.set(-5, 0, -15);
-capsule2.position.set(5, 0, -15);
-capsule4.position.set(5, 0, 15);
-capsule5.position.set(-5, 0, 15);
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N","three":"ktPTu"}],"bavdb":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "Wall2", ()=>Wall2);
-parcelHelpers.export(exports, "wall2", ()=>wall2);
-var _three = require("three");
-const Wall2 = {
-    width: 1,
-    height: 2,
-    depth: 8
-};
-let wallGeometry = new _three.BoxGeometry(Wall2.width, Wall2.height, Wall2.depth);
-let wallMaterial = new _three.MeshBasicMaterial({
-    color: 0x666666
-});
-let wall2 = new _three.Mesh(wallGeometry, wallMaterial);
-wall2.position.set(15, Wall2.height / 2, -2);
-
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}]},["9k9cF","5AKj5"], "5AKj5", "parcelRequire1a37")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}]},["9k9cF","5AKj5"], "5AKj5", "parcelRequire1a37")
 
 //# sourceMappingURL=index.a8f04b30.js.map

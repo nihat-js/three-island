@@ -1,4 +1,4 @@
-import { vehicle ,  Vehicle } from '../components/vehicle';
+import { vehicle ,  Vehicle } from '../components/player';
 import { plane , Plane } from '../components/plane';
 
 export function checkMapBorder(){
