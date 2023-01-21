@@ -1,5 +1,11 @@
+import * as THREE from 'three';
+
+
 import  { ball , render }  from  '../js/app'
 import { Vehicle } from './vehicle';
+
+const textureLoader = new THREE.TextureLoader();
+
 export const Ball  =  {
   radius : .25 ,
   weight : .5 , // .5kg
@@ -27,3 +33,6 @@ export const Ball  =  {
   }
 }
 
+const sphereGeometry = new THREE.SphereGeometry(Ball.radius, 15, 15);
+const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00, map: textureLoader.load("./textures/tennis-ball.svg") });
+export const ball = new THREE.Mesh(sphereGeometry, sphereMaterial);

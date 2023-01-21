@@ -7,15 +7,17 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import * as dat from 'dat.gui';
 import { UserController } from './userController'
 
-import { Plane } from '../components/plane';
-import { Vehicle } from '../components/vehicle'
-import { Ball } from '../components/ball'
+import { plane , Plane } from '../components/plane';
+import { vehicle , Vehicle } from '../components/vehicle'
+import { ball,Ball } from '../components/ball'
+import { wall1, Wall1 } from '../components/wall1'
+import { wall2, Wall2 } from '../components/wall2'
+import { capsule1 ,capsule2 ,capsule3, capsule4 , capsule5 } from '../components/goal'
 
 
-import {collisionWithObject } from '../engine/collision'
+import { collisionWithSphere, collisionWithObject } from '../engine/collision'
 import {checkMapBorder} from '../engine/mapBorder'
 
-const textureLoader = new THREE.TextureLoader();
 const gltfLoader = new GLTFLoader();
 
 
@@ -38,42 +40,17 @@ export const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window
 // scene.add(gridHelper)
 
 
-const boxGeometry = new THREE.BoxGeometry(Vehicle.width, Vehicle.height, Vehicle.depth)
-const boxMaterial = new THREE.MeshNormalMaterial({ color: 0x191919, })
-export const vehicle = new THREE.Mesh(boxGeometry, boxMaterial)
-
-
-let capsuleGeometry = new THREE.CapsuleGeometry(.2, 5, 4, 8);
-let capsuleMaterial = new THREE.MeshBasicMaterial({ color: 0x008080 });
-const capsule1 = new THREE.Mesh(capsuleGeometry, capsuleMaterial);
-const capsule2 = new THREE.Mesh(capsuleGeometry, capsuleMaterial);
-const capsule3 = new THREE.Mesh(capsuleGeometry, capsuleMaterial);
-const capsule4 = new THREE.Mesh(capsuleGeometry, capsuleMaterial);
-const capsule5 = new THREE.Mesh(capsuleGeometry, capsuleMaterial);
-const capsule6 = new THREE.Mesh(capsuleGeometry, capsuleMaterial);
 
 
 
 
-const sphereGeometry = new THREE.SphereGeometry(Ball.radius, 15, 15);
-const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00, map: textureLoader.load("./textures/tennis-ball.svg") });
-export const ball = new THREE.Mesh(sphereGeometry, sphereMaterial);
 
 
-const material = new THREE.LineBasicMaterial({ color: 0x008080 });
-const points = [];
-points.push(new THREE.Vector3(10, 0, 5));
-points.push(new THREE.Vector3(-10, 0, 5));
-// points.push( new THREE.Vector3( 10, 0, 0 ) );
-const geometry = new THREE.BufferGeometry().setFromPoints(points);
-const centerLine = new THREE.Line(geometry, material);
 
 
-const planeGeometry = new THREE.PlaneGeometry(Plane.width, Plane.height)
-const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xF5DEB3, map: textureLoader.load('./textures/sand-minecraft.jpg') })
 
-export const plane = new THREE.Mesh(planeGeometry, planeMaterial)
-plane.rotation.x = - Math.PI / 2
+
+
 
 
 
@@ -106,9 +83,16 @@ gui.addColor({ color: "#008080" }, 'color').onChange((e) => {
 
 
 export function render() {
-  
-  collisionWithObject (vehicle,ball  )
-  checkMapBorder()
+  //  let result  = collisionWithSphere (vehicle,ball  )
+  //  if (result){
+  //    Ball.move()
+  //   }
+  // result = collisionWithObject (vehicle,capsule1)
+  // if (result) {
+  //   capsule1.material.color.set(0x008080)
+  // }
+
+  // checkMapBorder()
 
   Vehicle.lookAt()
   renderer.render(scene, camera)
@@ -117,15 +101,11 @@ export function render() {
 
 
 
-capsule1.position.set(-5, 0, -15)
-capsule2.position.set(5, 0, -15)
-capsule4.position.set(5, 0, 15)
-capsule5.position.set(-5, 0, 15)
 
 vehicle.position.set(0, Vehicle.height/2, 3)
 Vehicle.lookAt() //  change camera target to vehicel
 ball.position.set(0, Ball.radius, -5)
-scene.add(vehicle, plane, capsule1, capsule2, capsule4, capsule5, ball)
+scene.add(vehicle, plane, capsule1, capsule2, capsule4, capsule5, ball,wall1,wall2)
 
 
 

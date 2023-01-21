@@ -1,6 +1,5 @@
-import { vehicle  } from  '../js/app';
-import { Vehicle } from '../components/vehicle';
-import { Plane } from '../components/plane';
+import { vehicle ,  Vehicle } from '../components/vehicle';
+import { plane , Plane } from '../components/plane';
 
 export function checkMapBorder(){
 

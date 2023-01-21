@@ -1,7 +1,10 @@
-import {vehicle, camera , render } from '../js/app'
+import { camera , render } from '../js/app'
 import * as THREE from 'three'
 
-export const Vehicle = {
+
+
+
+ export const Vehicle = {
 	width: .5,
 	height: 1,
 	depth: 1,
@@ -67,7 +70,14 @@ export const Vehicle = {
 		
 	},
 	lookAt : function (){
-		camera.position.set(0, 5 , vehicle.position.z + 12)
+		camera.position.set(0, 4 , vehicle.position.z + 10)
 	}
 }
 
+
+
+const boxGeometry = new THREE.BoxGeometry(Vehicle.width, Vehicle.height, Vehicle.depth)
+const boxMaterial = new THREE.MeshNormalMaterial({ color: 0x191919, })
+export const vehicle = new THREE.Mesh(boxGeometry, boxMaterial)
+
+console.log(vehicle)

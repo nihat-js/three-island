@@ -55,7 +55,6 @@ function onKeyDown() {
 
   if (downKeys.indexOf(event.key) == -1) {
     downKeys.push(event.key)
-    console.log(downKeys)
 
   }
 
@@ -81,7 +80,7 @@ function onKeyDown() {
 }
 
 function onKeyUp() {
-  console.log("key", event.key)
+  // console.log("key", event.key)
   downKeys = downKeys.filter(x => x != event.key)
   // console.log(downKeys)
   if (event.key == "w") {

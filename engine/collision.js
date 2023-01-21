@@ -1,15 +1,35 @@
-export function collisionWithSphere(a, b) {
-  const st1 = isIntersectionExist([vehicle.position.x - Vehicle.width / 2, vehicle.position.x + Vehicle.width / 2],
-    [ball.position.x - Ball.radius, ball.position.x + Ball.radius])
+export function collisionWithSphere(obj1, obj2, override = false) {
+  let a, b
+  if (!override) {
+    a = {
+      x: obj1.position.x,
+      y: obj1.position.y,
+      z: obj1.position.z,
+      width: obj1.geometry.parameters.width,
+      height: obj1.geometry.parameters.height,
+      depth: obj1.geometry.parameters.depth
+    }
+    b = {
+      x: obj2.position.x,
+      y: obj2.position.y,
+      z: obj2.position.z,
+      width: obj2.geometry.parameters.radius,
+      height: obj2.geometry.parameters.radius,
+      depth: obj2.geometry.parameters.radius
+    }
+  } else {
+    a = obj1, b = obj2
+  }
 
-  const st2 = isIntersectionExist([vehicle.position.y - Vehicle.height / 2, vehicle.position.y + Vehicle.height / 2],
-    [ball.position.y - Ball.radius, ball.position.y + Ball.radius])
+  const st1 = isIntersectionExist([a.x - a.width / 2, a.x + a.width / 2], [b.x - b.width / 2, b.x + b.width / 2])
+  const st2 = isIntersectionExist([a.y - a.height / 2, a.y + a.height / 2], [b.y - b.height, b.x + b.height / 2])
+  const st3 = isIntersectionExist([a.z - a.depth / 2, a.z + a.depth / 2], [b.z - b.depth, b.z + b.depth / 2])
 
-  const st3 = isIntersectionExist([vehicle.position.z - Vehicle.depth / 2, vehicle.position.z + Vehicle.depth / 2],
-    [ball.position.z - Ball.radius, ball.position.z + Ball.radius])
   if (st1 && st2 && st3) {
     console.log("you hit the object")
-    Ball.move()
+    return true
+  }else {
+    return false
   }
 }
 
@@ -21,21 +41,22 @@ export function collisionWithObject(obj1, obj2, override = false) {
       x: obj1.position.x,
       y: obj1.position.y,
       z: obj1.position.z,
-      width: obj1.geometry.width,
-      height: obj1.geometry.height,
-      depth: obj1.geometry.depth
+      width: obj1.geometry.parameters.width,
+      height: obj1.geometry.parameters.height,
+      depth: obj1.geometry.parameters.depth
     }
     b = {
-      x: obj1.position.x,
-      y: obj1.position.y,
-      z: obj1.position.z,
-      width: obj1.geometry.width,
-      height: obj1.geometry.height,
-      depth: obj1.geometry.depth
+      x: obj2.position.x,
+      y: obj2.position.y,
+      z: obj2.position.z,
+      width: obj2.geometry.parameters.width,
+      height: obj2.geometry.parameters.height,
+      depth: obj2.geometry.parameters.depth
     }
   } else {
     a = obj1, b = obj2
   }
+  console.log(obj2)
 
   const st1 = isIntersectionExist([a.x - a.width / 2, a.x + a.width / 2], [b.x - b.width / 2, b.x + b.width / 2])
   const st2 = isIntersectionExist([a.y - a.height / 2, a.y + a.height / 2], [b.y - b.height, b.x + b.height / 2])
