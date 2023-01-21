@@ -1,22 +1,23 @@
-import { vehicle ,  Vehicle } from '../components/player';
+import { player ,  Player } from '../components/player';
 import { plane , Plane } from '../components/plane';
 
 export function checkMapBorder(){
 
 
-  if ( Math.abs ( vehicle.position.z ) > Plane.height / 2  ){
-    if (vehicle.position.z > 0){
-      vehicle.position.z = Plane.height/2 - Vehicle.depth
+
+  if ( Math.abs ( player.position.z ) > Plane.height / 2  ){
+    if (player.position.z > 0){
+      player.position.z = Plane.height/2 - Player.depth
     }else {
-      vehicle.position.z = - Plane.height/2 + Vehicle.depth
+      player.position.z = - Plane.height/2 + Player.depth
     }
   }
 
-  if ( Math.abs ( vehicle.position.x ) > Plane.width /2  ){
-    if (vehicle.position.x  > 0 ){
-      vehicle.position.x = Plane.width / 2 - Vehicle.width 
+  if ( Math.abs ( player.position.x ) > Plane.width /2  ){
+    if (player.position.x  > 0 ){
+      player.position.x = Plane.width / 2 - Player.width 
     }else {
-      vehicle.position.x = - Plane.width /2 + Vehicle.width 
+      player.position.x = - Plane.width /2 + Player.width 
     }
   }
 

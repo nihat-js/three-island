@@ -583,6 +583,7 @@ var _collision = require("../engine/collision");
 var _mapBorder = require("../engine/mapBorder");
 var _mouse = require("../controllers/mouse");
 var _keyboard = require("../controllers/keyboard");
+var _buttons = require("../controllers/buttons");
 const gltfLoader = new (0, _gltfloader.GLTFLoader)();
 const renderer = new _three.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -601,7 +602,8 @@ const gui = new _datGui.GUI();
 gui.addColor({
     color: "#008080"
 }, "color").onChange((e)=>{
-    box.material.color.set(e);
+    (0, _wall1.wall1).material.color.set(e);
+    (0, _wall2.wall2).material.color.set(e);
 });
 function render() {
     let result = (0, _collision.collisionWithSphere)((0, _player.player), (0, _ball.ball));
@@ -610,7 +612,7 @@ function render() {
     // if (result) {
     //   capsule1.material.color.set(0x008080)
     // }
-    // checkMapBorder()
+    (0, _mapBorder.checkMapBorder)();
     (0, _player.Player).lookAt();
     renderer.render(scene, camera);
 }
@@ -637,7 +639,7 @@ setInterval(()=>{
     render();
 }, 1000 / 60);
 
-},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","three/examples/jsm/loaders/GLTFLoader":"dVRsF","dat.gui":"k3xQk","../components/plane":"kSuec","../components/player":"69QyH","../components/ball":"2abE5","../components/wall1":"gijtl","../components/wall2":"bavdb","../components/goal":"9oObE","../components/oceans":"lGPjU","../engine/collision":"bbAnI","../engine/mapBorder":"8XwoG","../controllers/mouse":"94UUj","../controllers/keyboard":"1v4L4","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"ktPTu":[function(require,module,exports) {
+},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","three/examples/jsm/loaders/GLTFLoader":"dVRsF","dat.gui":"k3xQk","../components/plane":"kSuec","../components/player":"69QyH","../components/ball":"2abE5","../components/wall1":"gijtl","../components/wall2":"bavdb","../components/goal":"9oObE","../components/oceans":"lGPjU","../engine/collision":"bbAnI","../engine/mapBorder":"8XwoG","../controllers/mouse":"94UUj","../controllers/keyboard":"1v4L4","../controllers/buttons":"8BVJX","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"ktPTu":[function(require,module,exports) {
 /**
  * @license
  * Copyright 2010-2022 Three.js Authors
@@ -35207,26 +35209,25 @@ const Player = {
         player.rotation.y > Math.PI && (player.rotation.y %= 2 * Math.PI);
         if (player.rotation.y == 0) player.position.z -= this.currentSpeed;
         else if (0 < player.rotation.y && player.rotation.y < Math.PI / 2) {
-            player.position.x -= this.currentSpeed * (1 - Math.sin(player.rotation.y));
-            player.position.z -= this.currentSpeed * (1 - Math.cos(player.rotation.y));
+            player.position.x -= this.currentSpeed * Math.sin(player.rotation.y);
+            player.position.z -= this.currentSpeed * Math.cos(player.rotation.y);
         } else if (player.rotation.y > Math.PI / 2 && player.rotation.y < Math.PI) {
-            player.position.x -= this.currentSpeed * (1 - Math.sin(player.rotation.y));
-            player.position.z += this.currentSpeed * (1 - Math.cos(player.rotation.y));
+            player.position.x -= Math.abs(this.currentSpeed * Math.sin(player.rotation.y));
+            player.position.z += Math.abs(this.currentSpeed * Math.cos(player.rotation.y));
         } else if (player.rotation.y > Math.PI && player.rotation.y < Math.PI * 1.5) {
-            player.position.x += this.currentSpeed * (1 - Math.sin(player.rotation.y));
-            player.position.z += this.currentSpeed * (1 - Math.cos(player.rotation.y));
+            player.position.x += Math.abs(this.currentSpeed * Math.sin(player.rotation.y));
+            player.position.z += Math.abs(this.currentSpeed * Math.cos(player.rotation.y));
         } else if (player.rotation.y > Math.PI * 1.5 && player.rotation.y < Math.PI * 2) {
-            player.position.x += this.currentSpeed * (1 - Math.cos(player.rotation.y));
-            player.position.z -= this.currentSpeed * (1 - Math.sin(player.rotation.y));
+            player.position.x += Math.abs(this.currentSpeed * -Math.cos(player.rotation.y));
+            player.position.z -= Math.abs(this.currentSpeed * Math.sin(player.rotation.y));
         }
-        // console.log("z,",player.position.z)
         this.lookAt();
         (0, _app.camera).position.x = player.position.x;
     // camera.rotation.y =  -  Math.pi /360 * 75 / player.rotation.y  
     },
     goBackward: function() {},
     lookAt: function() {
-        (0, _app.camera).position.set(0, 2, player.position.z + 6);
+        (0, _app.camera).position.set(0, 3.5, player.position.z + 8);
     },
     lookAround: function() {},
     spawn: function() {
@@ -35303,7 +35304,7 @@ const Wall1 = {
 };
 let wallGeometry = new _three.BoxGeometry(Wall1.width, Wall1.height, Wall1.depth);
 let wallMaterial = new _three.MeshBasicMaterial({
-    color: 0x666666
+    color: 0xe28743
 });
 let wall1 = new _three.Mesh(wallGeometry, wallMaterial);
 wall1.position.set(-15, Wall1.height / 2, -2);
@@ -35321,7 +35322,7 @@ const Wall2 = {
 };
 let wallGeometry = new _three.BoxGeometry(Wall2.width, Wall2.height, Wall2.depth);
 let wallMaterial = new _three.MeshBasicMaterial({
-    color: 0x666666
+    color: 0xe28743
 });
 let wall2 = new _three.Mesh(wallGeometry, wallMaterial);
 wall2.position.set(15, Wall2.height / 2, -2);
@@ -35500,19 +35501,20 @@ parcelHelpers.export(exports, "checkMapBorder", ()=>checkMapBorder);
 var _player = require("../components/player");
 var _plane = require("../components/plane");
 function checkMapBorder() {
-    if (Math.abs((0, _player.vehicle).position.z) > (0, _plane.Plane).height / 2) {
-        if ((0, _player.vehicle).position.z > 0) (0, _player.vehicle).position.z = (0, _plane.Plane).height / 2 - (0, _player.Vehicle).depth;
-        else (0, _player.vehicle).position.z = -(0, _plane.Plane).height / 2 + (0, _player.Vehicle).depth;
+    if (Math.abs((0, _player.player).position.z) > (0, _plane.Plane).height / 2) {
+        if ((0, _player.player).position.z > 0) (0, _player.player).position.z = (0, _plane.Plane).height / 2 - (0, _player.Player).depth;
+        else (0, _player.player).position.z = -(0, _plane.Plane).height / 2 + (0, _player.Player).depth;
     }
-    if (Math.abs((0, _player.vehicle).position.x) > (0, _plane.Plane).width / 2) {
-        if ((0, _player.vehicle).position.x > 0) (0, _player.vehicle).position.x = (0, _plane.Plane).width / 2 - (0, _player.Vehicle).width;
-        else (0, _player.vehicle).position.x = -(0, _plane.Plane).width / 2 + (0, _player.Vehicle).width;
+    if (Math.abs((0, _player.player).position.x) > (0, _plane.Plane).width / 2) {
+        if ((0, _player.player).position.x > 0) (0, _player.player).position.x = (0, _plane.Plane).width / 2 - (0, _player.Player).width;
+        else (0, _player.player).position.x = -(0, _plane.Plane).width / 2 + (0, _player.Player).width;
     }
 }
 
 },{"../components/player":"69QyH","../components/plane":"kSuec","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"94UUj":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "activateMouse", ()=>activateMouse);
 parcelHelpers.export(exports, "mouse", ()=>mouse);
 var _player = require("../components/player");
 var _app = require("../js/app");
@@ -35521,10 +35523,11 @@ let mouse = {
     y: null
 };
 let isMouseDown = false, isMenuActive = false, mouseX = -1, mouseY = -1;
-let activateMouse = false;
-function activateMose() {
-    activateMose = !activateMose;
-    if (activateMouse) {
+document.querySelector(".activate-mouse").onClick = activateMouse;
+let isMouseActive = false;
+function activateMouse() {
+    isMouseActive = !isMouseActive;
+    if (isMouseActive) {
         window.addEventListener("mousedown", onMouseDown);
         window.addEventListener("mousemove", onMouseMove);
         window.addEventListener("mouseup", onMouseUp);
@@ -35615,6 +35618,34 @@ function keyControllers() {
 const keyboard = {};
 setInterval(keyControllers, 1000 / 60);
 
-},{"../js/app":"5AKj5","../components/player":"69QyH","../components/plane":"kSuec","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}]},["9k9cF","5AKj5"], "5AKj5", "parcelRequire1a37")
+},{"../js/app":"5AKj5","../components/player":"69QyH","../components/plane":"kSuec","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"8BVJX":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "buttons", ()=>buttons);
+var _three = require("three");
+var _plane = require("../components/plane");
+var _player = require("../components/player");
+const textureLoader = new _three.TextureLoader();
+const groundArr = [
+    "./textures/grass-16x16-1.png",
+    "./texures/sand-minecraft.jpg"
+];
+function toggleMenuCanvas() {
+    document.querySelector(".menu").classList.toggle("d-none");
+    document.querySelector("canvas").classList.toggle("d-none");
+}
+document.querySelector(".new-game").addEventListener("click", newGame);
+document.querySelector(".random-ground").addEventListener("click", randomGround);
+function randomGround() {
+    (0, _plane.plane).material.map = textureLoader.load(groundArr[Math.floor(Math.random() * groundArr.length)]);
+    toggleMenuCanvas();
+}
+function newGame() {
+    (0, _player.Player).spawn();
+    toggleMenuCanvas();
+}
+const buttons = {};
+
+},{"three":"ktPTu","../components/plane":"kSuec","../components/player":"69QyH","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}]},["9k9cF","5AKj5"], "5AKj5", "parcelRequire1a37")
 
 //# sourceMappingURL=index.a8f04b30.js.map

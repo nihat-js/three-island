@@ -5,12 +5,12 @@ let mouse = {
   y: null ,
 }
 let isMouseDown = false, isMenuActive = false, mouseX = -1, mouseY = -1
-let activateMouse = false
 
-
-function activateMose(){
-  activateMose = !activateMose
-  if (activateMouse){
+document.querySelector(".activate-mouse").onClick = activateMouse
+let isMouseActive = false
+export function activateMouse(){
+  isMouseActive =  !isMouseActive
+  if (isMouseActive){
     window.addEventListener("mousedown", onMouseDown)
     window.addEventListener("mousemove", onMouseMove)
     window.addEventListener("mouseup", onMouseUp)
@@ -21,7 +21,6 @@ function activateMose(){
     window.removeEventListener("mouseup", onMouseUp)
   }
 }
-
 
 
 

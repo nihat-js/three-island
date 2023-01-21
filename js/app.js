@@ -18,8 +18,9 @@ import { collisionWithSphere, collisionWithObject } from '../engine/collision'
 import {checkMapBorder} from '../engine/mapBorder'
 
 
-import { mouse } from '../controllers/mouse';
+import { mouse ,  } from '../controllers/mouse';
 import { keyboard } from '../controllers/keyboard'
+import { buttons} from "../controllers/buttons"
 
 const gltfLoader = new GLTFLoader();
 
@@ -69,7 +70,8 @@ controls.update();
 
 const gui = new dat.GUI();
 gui.addColor({ color: "#008080" }, 'color').onChange((e) => {
-  box.material.color.set(e)
+    wall1.material.color.set(e)
+    wall2.material.color.set(e)
 })
 
 
@@ -95,7 +97,7 @@ export function render() {
   //   capsule1.material.color.set(0x008080)
   // }
 
-  // checkMapBorder()
+  checkMapBorder()
 
   Player.lookAt()
   renderer.render(scene, camera)
@@ -131,6 +133,3 @@ scene.add( ...SceneArray )
 setInterval(()=>{
   render()
 },1000/60)
-
-
-

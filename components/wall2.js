@@ -6,7 +6,7 @@ export const Wall2 = {
 }
 
 let wallGeometry = new THREE.BoxGeometry(Wall2.width, Wall2.height, Wall2.depth)
-let wallMaterial = new THREE.MeshBasicMaterial({ color: 0x666666 })
+let wallMaterial = new THREE.MeshBasicMaterial({ color: 0xe28743 })
 
 
 export let wall2 = new THREE.Mesh(wallGeometry, wallMaterial)

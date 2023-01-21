@@ -45,21 +45,20 @@ export const Player = {
 			player.position.z -= this.currentSpeed
 		}
 		else if (0 < player.rotation.y && player.rotation.y < Math.PI / 2) {
-			player.position.x -= this.currentSpeed * (1 - Math.sin(player.rotation.y))
-			player.position.z -= this.currentSpeed * (1 - Math.cos(player.rotation.y))
+			player.position.x -= this.currentSpeed *  Math.sin(player.rotation.y)
+			player.position.z -= this.currentSpeed *  Math.cos(player.rotation.y)
 
 		} else if (player.rotation.y > Math.PI / 2 && player.rotation.y < Math.PI) {
-			player.position.x -= this.currentSpeed * (1 - Math.sin(player.rotation.y))
-			player.position.z += this.currentSpeed * (1 - Math.cos(player.rotation.y))
+			player.position.x -=  Math.abs ( this.currentSpeed *   Math.sin(player.rotation.y ))
+			player.position.z +=  Math.abs ( this.currentSpeed *   Math.cos(player.rotation.y))
 		} else if (player.rotation.y > Math.PI && player.rotation.y < Math.PI * 1.5) {
-			player.position.x += this.currentSpeed * (1 - Math.sin(player.rotation.y))
-			player.position.z += this.currentSpeed * (1 - Math.cos(player.rotation.y))
+			player.position.x += Math.abs (  this.currentSpeed *  Math.sin(player.rotation.y))
+			player.position.z +=  Math.abs (  this.currentSpeed *  Math.cos(player.rotation.y))
 		} else if (player.rotation.y > Math.PI * 1.5 && player.rotation.y < Math.PI * 2) {
-			player.position.x += this.currentSpeed * (1 - Math.cos(player.rotation.y))
-			player.position.z -= this.currentSpeed * (1 - Math.sin(player.rotation.y))
+			player.position.x +=  Math.abs ( this.currentSpeed *  - Math.cos(player.rotation.y))
+			player.position.z -=  Math.abs ( this.currentSpeed * Math.sin(player.rotation.y))
 		}
 
-		// console.log("z,",player.position.z)
 		this.lookAt()
 		camera.position.x = player.position.x
 		// camera.rotation.y =  -  Math.pi /360 * 75 / player.rotation.y  
@@ -70,7 +69,7 @@ export const Player = {
 
 	},
 	lookAt: function () {
-		camera.position.set(0, 2, player.position.z + 6)
+		camera.position.set(0, 3.5, player.position.z + 8)
 	},
 	lookAround : function (){
 
