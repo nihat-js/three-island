@@ -1,9 +1,13 @@
-import { render ,  scene, camera, player, } from './app'
+import {  camera, player, } from '../js/app'
 import { Player } from '../components/player'
 import { Plane } from '../components/plane'
 
 
+// W A S D  => Move
+// R  => Spawn
+// Esc => Menu
 
+let isMenuActive = false;
 
 
 
@@ -17,20 +21,19 @@ let downKeys = []
 
 function onKeyDown() {
   event.key = event.key.toLowerCase()
-  event.key == "ArrowUp" ? event.key = "w" :
-    event.key == "ArrowDown" ? event.key == "s" :
-      event.key == "ArrowLeft" ? event.key = "a" :
-        event.key == "ArrowRight" ? event.key = "d" : null
+ 
+  if (event.key=="esc"){
+    
+  }
 
+  if (event.key == "r"){
+    Player.spawn()
+  }
 
   if ( !Player.isSpawning &&   downKeys.indexOf(event.key) == -1) {
     downKeys.push(event.key)
-
   }
 
-  if  (event.key == "r" ){
-    Player.spawn()
-  }
 
   if (event.key == "v") {
     camera.position.z += 1
@@ -81,7 +84,7 @@ function keyControllers() {
    }
 
   if (downKeys.indexOf("w") > -1) {
-    Player.accelerate()
+    // Player.accelerate()
     Player.goForward()
 
   } if (downKeys.indexOf("s") > -1) {
@@ -106,8 +109,6 @@ function keyControllers() {
 
 
 
-export const userController = () => {
-
-}
+export const keyboard = {}
 
 setInterval(keyControllers, 1000 / 60)

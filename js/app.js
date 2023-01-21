@@ -19,6 +19,7 @@ import {checkMapBorder} from '../engine/mapBorder'
 
 
 import { mouse } from '../controllers/mouse';
+import { keyboard } from '../controllers/keyboard'
 
 const gltfLoader = new GLTFLoader();
 
@@ -34,7 +35,7 @@ document.body.appendChild(renderer.domElement)
 
 export const scene = new THREE.Scene()
 scene.background = new THREE.Color(0x72bcd4)
-export const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100)
+export const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 80)
 
 // const axesHelper = new THREE.AxesHelper(5)
 // const gridHelper = new THREE.GridHelper(30, 100)
