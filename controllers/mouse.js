@@ -1,7 +1,7 @@
 import { player } from '../components/player'
 import { camera } from '../js/app'
 let mouse = {
-  x : ,
+  x : null,
   y: null ,
 }
 let isMouseDown = false, isMenuActive = false, mouseX = -1, mouseY = -1
