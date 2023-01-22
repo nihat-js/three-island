@@ -10,7 +10,7 @@ let wallMaterial = new THREE.MeshBasicMaterial({ color: 0xe28743 })
 
 
 export let wall1 = new THREE.Mesh(wallGeometry, wallMaterial)
-wall1.position.set(-15,Wall1.height/2 , -2 )
+wall1.position.set(-8,Wall1.height/2 , -2 )
 
 
 

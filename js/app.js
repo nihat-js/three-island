@@ -13,14 +13,19 @@ import { wall1, Wall1 } from '../components/wall1'
 import { wall2, Wall2 } from '../components/wall2'
 import { capsule1 ,capsule2 ,capsule3, capsule4 , capsule5 } from '../components/goal'
 import { ocean1,ocean2,ocean3,ocean4 } from '../components/oceans';
+import { cone1,cone2,cone3,cone4 } from '../components/cones'; 
 
-import { collisionWithSphere, collisionWithObject } from '../engine/collision'
+
+import { collisionWithSphere, collisionWithObject, collisionWithCone, isIntersectionExist } from '../engine/collision'
+import { collision2D } from '../engine/collision-2d';
+
 import {checkMapBorder} from '../engine/mapBorder'
 
 
 import { mouse ,  } from '../controllers/mouse';
 import { keyboard } from '../controllers/keyboard'
 import { buttons} from "../controllers/buttons"
+import { finalPlane } from '../components/finalPlane';
 
 const gltfLoader = new GLTFLoader();
 
@@ -92,14 +97,40 @@ export function render() {
    if (result){
      Ball.move()
     }
-  // result = collisionWithObject (player,capsule1)
-  // if (result) {
-  //   capsule1.material.color.set(0x008080)
-  // }
+  result = collisionWithObject (player,wall1)
+  if (result) {
+    wall1.material.color.set(0xc30010)
+    Player.spawn()
+  }
+  result = collisionWithObject (player,wall2)
+  if (result){
+    wall2.material.color.set(0xc30010)
+    Player.spawn()
+  }
+  
+  let arr = [cone1,cone2,cone3,cone4]
+
+  arr.forEach(x => {
+    let result = collisionWithCone  (player,x)
+    if (result) {
+      Player.spawn()
+      x.material.color.set(0xc30010)
+      return false
+    }
+  })
+
 
   checkMapBorder()
 
+  if (player.position.z < -23){
+    alert("Game over => Wrong finish line  ")
+    Player.spawn()
+  }
+
+
   Player.lookAt()
+
+
   renderer.render(scene, camera)
 }
 
@@ -116,7 +147,12 @@ SceneArray = [
   ocean1 , 
   ocean2 , 
   ocean3 ,
-   ocean4 
+   ocean4 ,
+   cone1,
+   cone2,
+   cone3,
+   cone4,
+   finalPlane
   ]
 
 

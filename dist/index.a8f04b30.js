@@ -579,11 +579,14 @@ var _wall1 = require("../components/wall1");
 var _wall2 = require("../components/wall2");
 var _goal = require("../components/goal");
 var _oceans = require("../components/oceans");
+var _cones = require("../components/cones");
 var _collision = require("../engine/collision");
+var _collision2D = require("../engine/collision-2d");
 var _mapBorder = require("../engine/mapBorder");
 var _mouse = require("../controllers/mouse");
 var _keyboard = require("../controllers/keyboard");
 var _buttons = require("../controllers/buttons");
+var _finalPlane = require("../components/finalPlane");
 const gltfLoader = new (0, _gltfloader.GLTFLoader)();
 const renderer = new _three.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -608,11 +611,35 @@ gui.addColor({
 function render() {
     let result = (0, _collision.collisionWithSphere)((0, _player.player), (0, _ball.ball));
     if (result) (0, _ball.Ball).move();
-    // result = collisionWithObject (player,capsule1)
-    // if (result) {
-    //   capsule1.material.color.set(0x008080)
-    // }
+    result = (0, _collision.collisionWithObject)((0, _player.player), (0, _wall1.wall1));
+    if (result) {
+        (0, _wall1.wall1).material.color.set(0xc30010);
+        (0, _player.Player).spawn();
+    }
+    result = (0, _collision.collisionWithObject)((0, _player.player), (0, _wall2.wall2));
+    if (result) {
+        (0, _wall2.wall2).material.color.set(0xc30010);
+        (0, _player.Player).spawn();
+    }
+    let arr = [
+        (0, _cones.cone1),
+        (0, _cones.cone2),
+        (0, _cones.cone3),
+        (0, _cones.cone4)
+    ];
+    arr.forEach((x)=>{
+        let result = (0, _collision.collisionWithCone)((0, _player.player), x);
+        if (result) {
+            (0, _player.Player).spawn();
+            x.material.color.set(0xc30010);
+            return false;
+        }
+    });
     (0, _mapBorder.checkMapBorder)();
+    if ((0, _player.player).position.z < -23) {
+        alert("Game over => Wrong finish line  ");
+        (0, _player.Player).spawn();
+    }
     (0, _player.Player).lookAt();
     renderer.render(scene, camera);
 }
@@ -632,14 +659,19 @@ SceneArray = [
     (0, _oceans.ocean1),
     (0, _oceans.ocean2),
     (0, _oceans.ocean3),
-    (0, _oceans.ocean4)
+    (0, _oceans.ocean4),
+    (0, _cones.cone1),
+    (0, _cones.cone2),
+    (0, _cones.cone3),
+    (0, _cones.cone4),
+    (0, _finalPlane.finalPlane)
 ];
 scene.add(...SceneArray);
 setInterval(()=>{
     render();
 }, 1000 / 60);
 
-},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","three/examples/jsm/loaders/GLTFLoader":"dVRsF","dat.gui":"k3xQk","../components/plane":"kSuec","../components/player":"69QyH","../components/ball":"2abE5","../components/wall1":"gijtl","../components/wall2":"bavdb","../components/goal":"9oObE","../components/oceans":"lGPjU","../engine/collision":"bbAnI","../engine/mapBorder":"8XwoG","../controllers/mouse":"94UUj","../controllers/keyboard":"1v4L4","../controllers/buttons":"8BVJX","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"ktPTu":[function(require,module,exports) {
+},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls":"7mqRv","three/examples/jsm/loaders/GLTFLoader":"dVRsF","dat.gui":"k3xQk","../components/plane":"kSuec","../components/player":"69QyH","../components/ball":"2abE5","../components/wall1":"gijtl","../components/wall2":"bavdb","../components/goal":"9oObE","../components/oceans":"lGPjU","../components/cones":"k639b","../engine/collision":"bbAnI","../engine/mapBorder":"8XwoG","../controllers/mouse":"94UUj","../controllers/keyboard":"1v4L4","../controllers/buttons":"8BVJX","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N","../components/finalPlane":"fpQZ4","../engine/collision-2d":"3UwDg"}],"ktPTu":[function(require,module,exports) {
 /**
  * @license
  * Copyright 2010-2022 Three.js Authors
@@ -35269,7 +35301,7 @@ const Ball = {
     currentSpeed: 0,
     move: function() {
         if (this.isMoving == true) return false;
-        console.log("i am moving", this.isMoving);
+        // console.log("i am moving",this.isMoving)
         this_ = this, this.ismMoving = true;
         let count = 0;
         let id = setInterval(()=>{
@@ -35289,7 +35321,7 @@ const sphereMaterial = new _three.MeshBasicMaterial({
     map: textureLoader.load("./textures/tennis-ball.svg")
 });
 const ball = new _three.Mesh(sphereGeometry, sphereMaterial);
-ball.position.set(0, Ball.radius, -2);
+ball.position.set(0, Ball.radius, -4);
 
 },{"three":"ktPTu","../components/player":"69QyH","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"gijtl":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -35307,7 +35339,7 @@ let wallMaterial = new _three.MeshBasicMaterial({
     color: 0xe28743
 });
 let wall1 = new _three.Mesh(wallGeometry, wallMaterial);
-wall1.position.set(-15, Wall1.height / 2, -2);
+wall1.position.set(-8, Wall1.height / 2, -2);
 
 },{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"bavdb":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -35383,11 +35415,44 @@ ocean2.position.set(0, 0, 50);
 ocean3.position.set(-50, 0, 0);
 ocean4.position.set(50, 0, 0);
 
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"k639b":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Cone", ()=>Cone);
+parcelHelpers.export(exports, "cone1", ()=>cone1);
+parcelHelpers.export(exports, "cone2", ()=>cone2);
+parcelHelpers.export(exports, "cone3", ()=>cone3);
+parcelHelpers.export(exports, "cone4", ()=>cone4);
+var _three = require("three");
+const Cone = {
+    width: .5,
+    depth: .5,
+    height: .5,
+    radialSegments: 30
+};
+const geometry = new _three.ConeGeometry(Cone.width / 2, Cone.height, Cone.radialSegments);
+const material = new _three.MeshBasicMaterial({
+    color: 0xffff00
+});
+const cone1 = new _three.Mesh(geometry, new _three.MeshBasicMaterial(0xff8f23));
+const cone2 = new _three.Mesh(geometry, new _three.MeshBasicMaterial(0xff8f23));
+const cone3 = new _three.Mesh(geometry, new _three.MeshBasicMaterial(0xff8f23));
+const cone4 = new _three.Mesh(geometry, new _three.MeshBasicMaterial(0xff8f23));
+const cone5 = new _three.Mesh(geometry, new _three.MeshBasicMaterial(0xff8f23));
+const cone6 = new _three.Mesh(geometry, new _three.MeshBasicMaterial(0xff8f23));
+cone1.position.set(-5, Cone.height / 2, -8);
+cone2.position.set(0, Cone.height / 2, -9);
+cone3.position.set(5, Cone.height / 2, -6);
+cone4.position.set(10, Cone.height / 2, -5);
+
 },{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"bbAnI":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "collisionWithSphere", ()=>collisionWithSphere);
 parcelHelpers.export(exports, "collisionWithObject", ()=>collisionWithObject);
+parcelHelpers.export(exports, "isIntersectionExist", ()=>isIntersectionExist);
+// isIntersectionExist([5,50]  , [10,20] )
+parcelHelpers.export(exports, "collisionWithCone", ()=>collisionWithCone);
 function collisionWithSphere(obj1, obj2, override = false) {
     let a, b;
     if (!override) {
@@ -35454,7 +35519,7 @@ function collisionWithObject(obj1, obj2, override = false) {
             depth: obj2.geometry.parameters.depth
         };
     } else a = obj1, b = obj2;
-    console.log(obj2);
+    // console.log(a,b)
     const st1 = isIntersectionExist([
         a.x - a.width / 2,
         a.x + a.width / 2
@@ -35466,14 +35531,14 @@ function collisionWithObject(obj1, obj2, override = false) {
         a.y - a.height / 2,
         a.y + a.height / 2
     ], [
-        b.y - b.height,
+        b.y - b.height / 2,
         b.x + b.height / 2
     ]);
     const st3 = isIntersectionExist([
         a.z - a.depth / 2,
         a.z + a.depth / 2
     ], [
-        b.z - b.depth,
+        b.z - b.depth / 2,
         b.z + b.depth / 2
     ]);
     if (st1 && st2 && st3) {
@@ -35492,7 +35557,54 @@ function isIntersectionExist(a, b) {
         maxVar = a;
     }
     return minVar[1] > maxVar[0];
-} // isIntersectionExist([5,50]  , [10,20] )
+}
+function collisionWithCone(obj1, obj2, override = false) {
+    let a, b;
+    if (!override) {
+        a = {
+            x: obj1.position.x,
+            y: obj1.position.y,
+            z: obj1.position.z,
+            width: obj1.geometry.parameters.width,
+            height: obj1.geometry.parameters.height,
+            depth: obj1.geometry.parameters.depth
+        };
+        b = {
+            x: obj2.position.x,
+            y: obj2.position.y,
+            z: obj2.position.z,
+            width: obj2.geometry.parameters.radius * 2,
+            height: obj2.geometry.parameters.height,
+            depth: obj2.geometry.parameters.radius * 2
+        };
+    } else a = obj1, b = obj2;
+    // console.log( a,b )
+    const st1 = isIntersectionExist([
+        a.x - a.width / 2,
+        a.x + a.width / 2
+    ], [
+        b.x - b.width / 2,
+        b.x + b.width / 2
+    ]);
+    const st2 = isIntersectionExist([
+        a.y - a.height / 2,
+        a.y + a.height / 2
+    ], [
+        b.y - b.height / 2,
+        b.x + b.height / 2
+    ]);
+    const st3 = isIntersectionExist([
+        a.z - a.depth / 2,
+        a.z + a.depth / 2
+    ], [
+        b.z - b.depth / 2,
+        b.z + b.depth / 2
+    ]);
+    if (st1 && st2 && st3) {
+        console.log("you hit the object");
+        return true;
+    } else return false;
+}
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"8XwoG":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -35646,6 +35758,72 @@ function newGame() {
 }
 const buttons = {};
 
-},{"three":"ktPTu","../components/plane":"kSuec","../components/player":"69QyH","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}]},["9k9cF","5AKj5"], "5AKj5", "parcelRequire1a37")
+},{"three":"ktPTu","../components/plane":"kSuec","../components/player":"69QyH","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"fpQZ4":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "FinalPlane", ()=>FinalPlane);
+parcelHelpers.export(exports, "finalPlane", ()=>finalPlane);
+var _three = require("three");
+const FinalPlane = {
+    width: 18,
+    depth: 2
+};
+const textureLoader = new _three.TextureLoader();
+const planeGeometry = new _three.PlaneGeometry(FinalPlane.width, FinalPlane.depth);
+const planeMaterial = new _three.MeshBasicMaterial({
+    color: 0xF5DEB3,
+    map: textureLoader.load("./textures/finish-line.jpg")
+});
+const finalPlane = new _three.Mesh(planeGeometry, planeMaterial);
+finalPlane.rotation.x = -Math.PI / 2;
+finalPlane.position.set(0, .1, -24);
+
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}],"3UwDg":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "collision2D", ()=>collision2D);
+var _collision = require("./collision");
+function collision2D(obj1, obj2, override = false) {
+    let a, b;
+    if (!override) {
+        a = {
+            x: obj1.position.x,
+            y: obj1.position.y,
+            z: obj1.position.z,
+            width: obj1.geometry.parameters.width,
+            height: obj1.geometry.parameters.height,
+            depth: obj1.geometry.parameters.depth
+        };
+        b = {
+            x: obj2.position.x,
+            y: obj2.position.y,
+            z: obj2.position.z,
+            width: obj2.geometry.parameters.width,
+            // height: obj2.geometry.parameters.height,
+            depth: obj2.geometry.parameters.width
+        };
+    } else a = obj1, b = obj2;
+    console.log(a, b);
+    const st1 = (0, _collision.isIntersectionExist)([
+        a.x - a.width / 2,
+        a.x + a.width / 2
+    ], [
+        b.x - b.width / 2,
+        b.x + b.width / 2
+    ]);
+    const st3 = (0, _collision.isIntersectionExist)([
+        a.z - a.depth / 2,
+        a.z + a.depth / 2
+    ], [
+        b.z - b.depth / 2,
+        b.z + b.depth / 2
+    ]);
+    if (st1 && st3) {
+        console.log("you hit the object");
+        return true;
+    } else return false;
+}
+
+},{"./collision":"bbAnI","@parcel/transformer-js/src/esmodule-helpers.js":"4nB1N"}]},["9k9cF","5AKj5"], "5AKj5", "parcelRequire1a37")
 
 //# sourceMappingURL=index.a8f04b30.js.map

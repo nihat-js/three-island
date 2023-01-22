@@ -14,7 +14,7 @@ export const Ball  =  {
     if ( this.isMoving == true ){
       return false
     }
-    console.log("i am moving",this.isMoving)
+    // console.log("i am moving",this.isMoving)
 
 
     this_ = this,
@@ -35,4 +35,4 @@ export const Ball  =  {
 const sphereGeometry = new THREE.SphereGeometry(Ball.radius, 15, 15);
 const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00, map: textureLoader.load("./textures/tennis-ball.svg") });
 export const ball = new THREE.Mesh(sphereGeometry, sphereMaterial);
-ball.position.set(0, Ball.radius, -2)
+ball.position.set(0, Ball.radius, -4)
